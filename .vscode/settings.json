@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./robotics_toolbox/robotics-toolbox-python"
+    ]
+}

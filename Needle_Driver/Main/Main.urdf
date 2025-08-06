@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="Main">
+    <link name="tool_main_insert-v2">
+        <inertial>
+            <origin xyz="-0.0053624259279265694 0.007901906442564912 0.006377546474600954" rpy="0.0 0.0 0.0" />
+            <mass value="0.36010027632856906" />
+            <inertia ixx="0.00016552115582077248" iyy="0.00040436128711595" izz="0.00030462812672732756" ixy="-8.160725180885336e-06" iyz="5.783785476504269e-09" ixz="3.917362557990069e-08" />
+        </inertial>
+        <visual name="tool_main_insert-v2_visual">
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+            <geometry>
+                <mesh filename="meshes/tool_main_insert-v2.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </visual>
+        <collision name="tool_main_insert-v2_collision">
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+            <geometry>
+                <mesh filename="meshes/tool_main_insert-v2.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </collision>
+    </link>
+    <link name="tool_roll_link-v2">
+        <inertial>
+            <origin xyz="-5.7532335806520506e-09 1.2608024446691956e-09 0.1967211841039864" rpy="0.0 -0.0 0.0" />
+            <mass value="0.10488677381482023" />
+            <inertia ixx="0.0021125264338710745" iyy="0.002112522692833081" izz="1.5071702981895865e-06" ixy="-5.059757192914916e-10" iyz="3.659973454948201e-10" ixz="2.0093792279488217e-10" />
+        </inertial>
+        <visual name="tool_roll_link-v2_visual">
+            <origin xyz="-0.004490417415677974 0.013859238485145252 0.22368699399447528" rpy="-5.989552451538521e-17 -1.2724994776185814e-17 2.932252056193504" />
+            <geometry>
+                <mesh filename="meshes/tool_roll_link-v2.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </visual>
+        <collision name="tool_roll_link-v2_collision">
+            <origin xyz="-0.004490417415677974 0.013859238485145252 0.22368699399447528" rpy="-5.989552451538521e-17 -1.2724994776185814e-17 2.932252056193504" />
+            <geometry>
+                <mesh filename="meshes/tool_roll_link-v2.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </collision>
+    </link>
+    <link name="tool_pitch_link-v2">
+        <inertial>
+            <origin xyz="0.003009815110504164 -0.00017116965634875525 -0.003921098223099633" rpy="0.0 -0.0 0.0" />
+            <mass value="0.001848456529673938" />
+            <inertia ixx="9.734432308848493e-09" iyy="1.995342841963014e-08" izz="2.144835040937586e-08" ixy="-2.2357564446493725e-09" iyz="2.543611489411446e-10" ixz="4.712461786641537e-10" />
+        </inertial>
+        <visual name="tool_pitch_link-v2_visual">
+            <origin xyz="0.004431695369310802 0.014108396106691332 -0.0003740900047587759" rpy="2.9368751529878456 0.04406167886070218 0.20904837679030283" />
+            <geometry>
+                <mesh filename="meshes/tool_pitch_link-v2.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </visual>
+        <collision name="tool_pitch_link-v2_collision">
+            <origin xyz="0.004431695369310802 0.014108396106691332 -0.0003740900047587759" rpy="2.9368751529878456 0.04406167886070218 0.20904837679030283" />
+            <geometry>
+                <mesh filename="meshes/tool_pitch_link-v2.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </collision>
+    </link>
+    <link name="tool_yaw_link-v2">
+        <inertial>
+            <origin xyz="-0.0005021063487370725 0.0022644398585468617 -0.00048108325824431476" rpy="0.0 -0.0 0.0" />
+            <mass value="3.2124366203889884e-05" />
+            <inertia ixx="7.536764822075474e-11" iyy="1.0516333136817847e-11" izz="7.564951921455124e-11" ixy="1.512371998712397e-11" iyz="1.449196797450011e-11" ixz="-3.2120435856468228e-12" />
+        </inertial>
+        <visual name="tool_yaw_link-v2_visual">
+            <origin xyz="0.005246120425483625 0.007278603059892525 -0.014451594807817148" rpy="1.3660788261929444 0.04406167886070293 0.20904837679030655" />
+            <geometry>
+                <mesh filename="meshes/tool_yaw_link-v2.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </visual>
+        <collision name="tool_yaw_link-v2_collision">
+            <origin xyz="0.005246120425483625 0.007278603059892525 -0.014451594807817148" rpy="1.3660788261929444 0.04406167886070293 0.20904837679030655" />
+            <geometry>
+                <mesh filename="meshes/tool_yaw_link-v2.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </collision>
+    </link>
+    <link name="gripper_left-v2">
+        <inertial>
+            <origin xyz="0.0015423589079763644 0.002356840733167289 0.00012016717566702973" rpy="0.0 -0.0 0.0" />
+            <mass value="0.0003391195298462404" />
+            <inertia ixx="9.063732285662139e-10" iyy="2.9492866828888286e-09" izz="3.0777500775145154e-09" ixy="-9.909896781171059e-10" iyz="-2.398781115928668e-10" ixz="-4.776516831762935e-10" />
+        </inertial>
+        <visual name="gripper_left-v2_visual">
+            <origin xyz="-0.01281004287834648 0.004363350392095093 -0.010511151280136423" rpy="0.5633863355773223 1.3282051773672303 -0.7757137549504287" />
+            <geometry>
+                <mesh filename="meshes/gripper_left-v2.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </visual>
+        <collision name="gripper_left-v2_collision">
+            <origin xyz="-0.01281004287834648 0.004363350392095093 -0.010511151280136423" rpy="0.5633863355773223 1.3282051773672303 -0.7757137549504287" />
+            <geometry>
+                <mesh filename="meshes/gripper_left-v2.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </collision>
+    </link>
+    <link name="gripper_right-v2">
+        <inertial>
+            <origin xyz="0.0012770549693135536 0.0034693077476202106 -0.0012404299313093703" rpy="0.0 -0.0 0.0" />
+            <mass value="0.00033907724394841216" />
+            <inertia ixx="5.498805751145026e-10" iyy="3.3441026653000493e-09" izz="3.0411818832817242e-09" ixy="-1.2249796043285359e-10" iyz="-1.7231536630300892e-11" ixz="6.134297961435797e-10" />
+        </inertial>
+        <visual name="gripper_right-v2_visual">
+            <origin xyz="-0.015005907439477469 0.004656860392743307 -0.006837944409903678" rpy="-0.6671933341833042 1.3092934622134647 -2.036674603254713" />
+            <geometry>
+                <mesh filename="meshes/gripper_right-v2.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </visual>
+        <collision name="gripper_right-v2_collision">
+            <origin xyz="-0.015005907439477469 0.004656860392743307 -0.006837944409903678" rpy="-0.6671933341833042 1.3092934622134647 -2.036674603254713" />
+            <geometry>
+                <mesh filename="meshes/gripper_right-v2.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="tool_main_insert-v2_Revolute-1" type="continuous">
+        <origin xyz="0.03349446 0.01262349 0.00643401" rpy="-3.141592653589793 -1.5707963267948966 0" />
+        <parent link="tool_main_insert-v2" />
+        <child link="tool_roll_link-v2" />
+        <axis xyz="0.0 0.0 1.0" />
+        <dynamics damping="0.5" friction="0.4"/>
+    </joint>
+    <joint name="tool_roll_link-v2_Revolute-3" type="revolute">
+        <origin xyz="-0.0008140499999999995 -0.003838630000000001 0.44601307" rpy="1.5707963267948966 -1.5707963267948966 0" />
+        <parent link="tool_roll_link-v2" />
+        <child link="tool_pitch_link-v2" />
+        <axis xyz="-2.615361089206941e-34 0.207815 0.978168" />
+        <limit lower="-1.570796" upper="1.570796" effort="1" velocity="1" />
+        <dynamics damping="0.5" friction="0.4"/>
+    </joint>
+    <joint name="tool_pitch_link-v2_Rigid-4" type="fixed">
+        <origin xyz="0.009337039999999987 -0.00141636 -0.0036534200000000005" rpy="2.775557561562892e-17 -2.775557561562892e-17 1.2585044819704741e-33" />
+        <parent link="tool_pitch_link-v2" />
+        <child link="tool_yaw_link-v2" />
+        <dynamics damping="0.5" friction="0.4"/>
+    </joint>
+    <joint name="tool_pitch_link-v2_Revolute-5" type="revolute">
+        <origin xyz="0.009337039999999987 -0.00141636 -0.0036534200000000005" rpy="2.775557561562892e-17 -2.775557561562892e-17 1.2585044819704741e-33" />
+        <parent link="tool_pitch_link-v2" />
+        <child link="gripper_left-v2" />
+        <axis xyz="0.21195499999999998 -0.955944 0.20309300000000002" />
+        <limit lower="0.0" upper="1.570796" effort="1" velocity="1" />
+        <dynamics damping="0.5" friction="0.4"/>
+    </joint>
+    <joint name="tool_pitch_link-v2_Revolute-6" type="revolute">
+        <origin xyz="0.009337039999999987 -0.00141636 -0.0036534200000000005" rpy="2.775557561562892e-17 -2.775557561562892e-17 1.2585044819704741e-33" />
+        <parent link="tool_pitch_link-v2" />
+        <child link="gripper_right-v2" />
+        <axis xyz="0.21195499999999998 -0.955944 0.20309300000000002" />
+        <limit lower="-1.570796" upper="0.0" effort="1" velocity="1" />
+        <dynamics damping="0.5" friction="0.4"/>
+    </joint>
+</robot>

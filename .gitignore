@@ -1,0 +1,12 @@
+# Python venv
+.venv/
+# Bytecode
+__pycache__/
+*.pyc
+# build artifacts
+/dist/
+*.whl
+*.zip
+
+# logs
+*.json
