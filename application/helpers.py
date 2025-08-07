@@ -7,6 +7,7 @@ from spatialmath import SE3
 import spatialgeometry as sg
 import matplotlib.pyplot as plt
 import swift
+import pybullet
 
 def setup_3arm_system(urdf_path, meshes_dir, incorrect_prefix, radius=0.6, cube_size=[0.4, 0.4, 0.3], base_z_offset=0.05):
     # Legacy Mesh Symlink Hack
@@ -88,6 +89,103 @@ def check_reach(arm, T_des, tol=1e-6):
 
     return reachable, dist, max_reach
 
+def move_arm_ik(env, arm, T_world_target, q0=None, tol=1e-6, mask=[1,1,1,0,0,0], N=100, dt=0.05, error_thresh=0.005):
+    """
+    Move arm to target pose using IK and joint interpolation.
+    """
+    if q0 is None:
+        q0 = arm.q.copy()
+    
+    # Convert world target to arm's base frame for IK
+    T_arm_target = arm.base.inv() @ T_world_target
+    
+    # Solve IK
+    ik_sol = arm.ikine_LM(T_arm_target, q0=q0, tol=tol, mask=mask)
+    if not ik_sol.success:
+        print("IK failed to converge!")
+        return None, None, False
+    
+    # Prepare for interpolation
+    q_start = arm.q.copy()
+    q_target = ik_sol.q
+    traj_actual = []
+    traj_target = []
+    
+    # Execute trajectory
+    for i in range(1, N+1):
+        α = i / N
+        arm.q = q_start + α*(q_target - q_start)
+        
+        env.step(dt)
+        
+        T_now = arm.fkine(arm.q)
+        traj_actual.append(T_now.t)
+        traj_target.append(T_world_target.t)
+        
+        if np.linalg.norm(T_now.t - T_world_target.t) < error_thresh:
+            print(f"Reached target in {i} steps, error {np.linalg.norm(T_now.t - T_world_target.t):.4f} m")
+            break
+    else:
+        err = np.linalg.norm(T_now.t - T_world_target.t)
+        print(f"Completed {N} steps with final error {err:.4f} m")
+    
+    return np.array(traj_actual), np.array(traj_target), True
+
+
+def move_arm_ik1(env, arm, T_world_target, camera_arm=None, other_arms=[], q0=None, tol=1e-6, mask=[1,1,1,0,0,0], N=100, dt=0.05, error_thresh=0.005):
+    """
+    Move arm to target pose using IK and joint interpolation.
+    Returns: (traj_actual, traj_target, success)
+    """
+    if q0 is None:
+        q0 = arm.q.copy()
+    
+    # Initialize empty arrays for failure case
+    empty_traj = np.zeros((0, 3))
+    
+    # Convert world target to arm's base frame for IK
+    T_arm_target = arm.base.inv() @ T_world_target
+    
+    # Solve IK
+    try:
+        ik_sol = arm.ikine_LM(T_arm_target, q0=q0, tol=tol, mask=mask)
+        if not ik_sol.success:
+            print("IK failed to converge!")
+            return empty_traj, empty_traj, False
+        
+        # Prepare for interpolation
+        q_start = arm.q.copy()
+        q_target = ik_sol.q
+        traj_actual = []
+        traj_target = []
+        
+        # Execute trajectory
+        for i in range(1, N+1):
+            α = i / N
+            arm.q = q_start + α*(q_target - q_start)
+            
+            # Update camera if provided
+            if camera_arm and other_arms:
+                tracking_arms = [arm] + other_arms
+                if len(tracking_arms) >= 2:
+                    camera_tracking(camera_arm, tracking_arms[0], tracking_arms[1])
+            
+            env.step(dt)
+            
+            T_now = arm.fkine(arm.q)
+            traj_actual.append(T_now.t)
+            traj_target.append(T_world_target.t)
+            
+            if np.linalg.norm(T_now.t - T_world_target.t) < error_thresh:
+                print(f"Reached target in {i} steps, error {np.linalg.norm(T_now.t - T_world_target.t):.4f} m")
+                break
+        
+        return np.array(traj_actual), np.array(traj_target), True
+    
+    except Exception as e:
+        print(f"Movement failed: {str(e)}")
+        return empty_traj, empty_traj, False
+
 def plot_trajectory(traj_actual, traj_target):
     # --- 3D Trajectory Plot ---
     fig = plt.figure()
@@ -135,3 +233,87 @@ def plot_errors(traj_actual, traj_target):
     print(f"Final error norm: {errors_norm[-1]:.4f} m")
     print(f"Mean error norm:  {errors_norm.mean():.4f} m")
     print(f"Max error norm:   {errors_norm.max():.4f} m")
+
+
+def setup_hybrid_environment():
+    """
+    Set up hybrid environment with Swift visualization and PyBullet collision checking
+    Returns:
+        env_swift: Swift visualization environment
+        env_pyb: PyBullet collision environment
+    """
+    # Swift for visualization
+    env_swift = swift()
+    env_swift.launch(realtime=True)
+    
+    # PyBullet for collision checking (headless mode)
+    env_pyb = pybullet()
+    env_pyb.launch(headless=True)  # Run in background
+    
+    return env_swift, env_pyb
+
+def setup_collision_objects(env_pyb, robot_models, obstacles):
+    """
+    Add collision objects to PyBullet environment
+    Args:
+        env_pyb: PyBullet environment
+        robot_models: List of robot models
+        obstacles: List of obstacle geometries
+    """
+    for robot in robot_models:
+        env_pyb.add(robot, collision=True)  # Enable collision geometry
+        
+    for obstacle in obstacles:
+        env_pyb.add(obstacle, collision=True)
+
+
+def camera_tracking(camera_arm, arm1, arm2, follow_distance=0.5):
+    """
+    Moves & orients camera_arm so it stays `follow_distance` behind
+    the midpoint of arm1 & arm2, always looking at the midpoint.
+    
+    Args:
+        camera_arm: The camera arm robot
+        arm1: First arm to track
+        arm2: Second arm to track
+        follow_distance: Distance to maintain behind midpoint (meters)
+    """
+    # Get the two tool tips and compute their midpoint
+    pos1 = arm1.fkine(arm1.q).t
+    pos2 = arm2.fkine(arm2.q).t
+    midpoint = (pos1 + pos2) / 2.0
+    
+    # Compute current direction from camera → midpoint
+    cam_pos = camera_arm.fkine(camera_arm.q).t
+    target_dir = (midpoint - cam_pos) / np.linalg.norm(midpoint - cam_pos)
+    
+    # Compute desired camera position (follow_distance behind midpoint)
+    desired_cam_pos = midpoint - (target_dir * follow_distance)
+    
+    # Compute desired orientation (camera looking at midpoint)
+    # Alternative method without LookAt:
+    # 1. Compute the direction vector from camera to midpoint
+    look_dir = normalize(midpoint - desired_cam_pos)
+    
+    # 2. Create a rotation matrix that aligns the camera's x-axis with this direction
+    # (Assuming camera's forward direction is +x)
+    z_axis = np.array([0, 0, 1])  # World up axis
+    y_axis = normalize(np.cross(z_axis, look_dir))
+    new_z_axis = normalize(np.cross(look_dir, y_axis))
+    
+    R = np.column_stack((look_dir, y_axis, new_z_axis))
+    desired_orientation = SE3.Rt(R, desired_cam_pos)
+    
+    # Convert to camera arm's base frame
+    T_cam_target = camera_arm.base.inv() @ desired_orientation
+    
+    # Solve IK
+    sol = camera_arm.ikine_LM(T_cam_target, q0=camera_arm.q)
+    if sol.success:
+        camera_arm.q = sol.q
+    
+    return midpoint
+
+def normalize(v):
+    norm = np.linalg.norm(v)
+    return v / norm if norm > 1e-6 else v
